@@ -2,6 +2,7 @@ package com.example.activitidemo.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.activiti.api.process.runtime.ProcessRuntime;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 public class TestService {
     private final ProcessEngine processEngine;
 
+    private final RepositoryService repositoryService;
 
     public String activitiTestLoader() {
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream("processes/diagram.bpmn");
@@ -83,17 +85,16 @@ public class TestService {
     }
 
     public String getProcessByKey(String processKey) {
-        RepositoryService repositoryService = processEngine.getRepositoryService();
+//        RepositoryService repositoryService = processEngine.getRepositoryService();
 
         List<ProcessDefinition> processDefinitionQuery = null;
         try {
-            processDefinitionQuery = processEngine
-                    .getRepositoryService()
-                    .createProcessDefinitionQuery()
-                    .processDefinitionKey(processKey)
-                    .orderByDeploymentId()
-                    .desc()
-                    .list();
+            processDefinitionQuery =
+                    repositoryService.createProcessDefinitionQuery()
+                            .processDefinitionKey(processKey)
+                            .orderByDeploymentId()
+                            .desc()
+                            .list();
 
             var processDefinition = processDefinitionQuery.get(0).getId();
             var bpmnModel = repositoryService.getBpmnModel(processDefinition);
@@ -113,12 +114,12 @@ public class TestService {
 
             TaskService taskService = processEngine.getTaskService();
             ManualTask task0 = userTasks.get(0);
-//            task0.setName("CRM");
+            task0.setName("CRM");
 
 //            taskService.complete(userTasks.get(0).getId());
 
             ManualTask task1 = userTasks.get(1);
-//            task1.setName("MO");
+            task1.setName("MO");
 
 //            var process = bpmnModel.getMainProcess();
 
@@ -135,7 +136,7 @@ public class TestService {
     }
 
     public String deployBPMN(String bpmnXml, String newKey) {
-        RepositoryService repositoryService = processEngine.getRepositoryService();
+//        RepositoryService repositoryService = processEngine.getRepositoryService();
 
         InputStream inputStream = null;
         try {
@@ -150,7 +151,7 @@ public class TestService {
             }
 
             Deployment deployment = repositoryService.createDeployment()
-                    .addBpmnModel(newKey+".bpmn", bpmnModel)
+                    .addBpmnModel(newKey + ".bpmn", bpmnModel)
                     .deploy();
 
         } catch (Exception e) {

@@ -4,7 +4,11 @@ import javax.sql.DataSource;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
+import org.activiti.engine.RepositoryService;
+import org.activiti.engine.TaskService;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -40,14 +44,27 @@ public class ActivitiConfig {
         configuration.setDataSource(dataSource());
         configuration.setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE);
         configuration.setAsyncExecutorActivate(false);
-//        configuration.setMailServerHost("mail.my-corp.com");
-//        configuration.setMailServerPort("5025");
         return configuration;
     }
 
     @Bean
     public ProcessEngine processEngine() {
         return processEngineConfiguration().buildProcessEngine();
+    }
+
+    @Bean
+    public RepositoryService repositoryService() throws Exception {
+        return processEngine().getRepositoryService();
+    }
+
+    @Bean
+    public TaskService taskService() throws Exception {
+        return processEngine().getTaskService();
+    }
+
+    @Bean
+    public RuntimeService runtimeService() throws Exception {
+        return processEngine().getRuntimeService();
     }
 
 }
